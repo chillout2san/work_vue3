@@ -1,9 +1,24 @@
 <template>
- <div>
-   <h1>ToDoリスト</h1>
-   <label><input type="radio" name="task" @click="display = 'すべて'" checked>すべて</label>
-   <label><input type="radio" name="task" @click="display = '作業中'">作業中</label>
-   <label><input type="radio" name="task" @click="display = '完了'">完了</label>
+  <div>
+    <h1>ToDoリスト</h1>
+    <label
+      ><input
+        type="radio"
+        name="task"
+        @click="display = 'すべて'"
+        checked
+      />すべて</label
+    >
+    <label
+      ><input
+        type="radio"
+        name="task"
+        @click="display = '作業中'"
+      />作業中</label
+    >
+    <label
+      ><input type="radio" name="task" @click="display = '完了'" />完了</label
+    >
 
     <table>
       <thead>
@@ -15,53 +30,71 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(todo,index) in Todos" v-bind:key="index" v-show="display===todo.status || display==='すべて'">
-            <th>{{ index }}</th>
-            <th>{{ todo.task }}</th>
-            <th><button @click="changeStatus(index)">{{ todo.status }}</button></th>
-            <th><button @click="deleteTask(index)">削除</button></th>
+        <tr v-for="(todo, index) in selectedTodos" v-bind:key="index">
+          <th>{{ todo.id }}</th>
+          <th>{{ todo.task }}</th>
+          <th>
+            <button @click="changeStatus(todo.id)">{{ todo.status }}</button>
+          </th>
+          <th><button @click="deleteTask(todo.id)">削除</button></th>
         </tr>
       </tbody>
     </table>
-   <h2>新規タスクの追加</h2>
-   <input type="text" v-model="task"><button @click="pushTask">追加</button>
-
- </div>
+    <h2>新規タスクの追加</h2>
+    <input type="text" v-model="task" /><button @click="pushTask">追加</button>
+  </div>
 </template>
 
 <script>
 export default {
   data() {
     return {
+      id: 0,
       task: '',
       status: '作業中',
       display: 'すべて',
-      Todos: []
+      todos: []
+    };
+  },
+  computed: {
+    selectedTodos() {
+      const display = this.display;
+      if (display === 'すべて') {
+        return this.todos;
+      } else {
+        return this.todos.filter(function(todo) {
+          return todo.status === display;
+        });
+      }
     }
   },
   methods: {
-    pushTask: function() {
+    pushTask() {
       const todoElm = {
+        id: this.id,
         task: this.task,
         status: this.status
       };
-      this.Todos.push(todoElm);
+      this.todos.push(todoElm);
+      this.id += 1;
       this.task = '';
     },
-    deleteTask: function(index) {
-      this.Todos.splice(index, 1);
+    deleteTask(id) {
+      this.todos.splice(id, 1);
+      this.id -= 1;
+      for (let i = 0; i < this.todos.length; i++) {
+        this.todos[i].id = i;
+      }
     },
-    changeStatus: function(index) {
-      if(this.Todos[index].status === '作業中'){
-        this.Todos[index].status = '完了';
-      }else{
-        this.Todos[index].status = '作業中';
+    changeStatus(id) {
+      if (this.todos[id].status === '作業中') {
+        this.todos[id].status = '完了';
+      } else {
+        this.todos[id].status = '作業中';
       }
     }
   }
 };
 </script>
 
-<style>
-
-</style>
+<style></style>
