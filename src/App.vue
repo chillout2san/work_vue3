@@ -62,7 +62,7 @@ export default {
       if (display === 'すべて') {
         return this.todos;
       } else {
-        return this.todos.filter(function(todo) {
+        return this.todos.filter(todo => {
           return todo.status === display;
         });
       }
